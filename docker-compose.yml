@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  angular:
+    build: ./angular
+    ports:
+      - "4200:80"
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    volumes:
+      - uploads:/app/uploads
+      - output:/app/output
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  worker:
+    build: ./worker
+    volumes:
+      - uploads:/app/uploads
+      - output:/app/output
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  redis:
+    image: redis:6.2
+    container_name: redis
+    restart: always
+
+volumes:
+  uploads:
+  output:
