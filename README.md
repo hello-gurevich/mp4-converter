@@ -1,7 +1,7 @@
 
 # MP4 to GIF converter
 
-A brief description of what this project does and who it's for
+Convert mp4 files to gif format
 
 
 ## Used
