@@ -3,6 +3,8 @@ version: '3.8'
 services:
   angular:
     build: ./angular
+    volumes:
+      - output:/usr/share/nginx/html/output
     ports:
       - "4200:80"
     depends_on:

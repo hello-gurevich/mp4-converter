@@ -3,15 +3,26 @@
   <input
     class="form-control"
     type="file"
-    (change)="onFileChange($event)"
+    #mp4FileInput
+    (change)="onFileChange()"
   >
 </div>
 
-<span
-  class="btn btn-primary mb-3"
-  (click)="onConvertButtonClick()"
->
-  Convert
-</span>
+<div class="mb-3 d-flex align-content-center button-block">
+  <span
+    class="btn btn-primary"
+    (click)="onConvertButtonClick()"
+    [class.disabled]="!isFileValid() || isConvertingInProgress()"
+  >
+    Convert
+  </span>
+
+  @if(linkToDownload() !== null) {
+    <a target="_blank" [href]="linkToDownload()">Download GIF</a>
+  }
+
+</div>
+
+
 
 
