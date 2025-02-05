@@ -2,17 +2,15 @@ const express = require('express');
 const multer = require('multer');
 const { Queue } = require('bullmq');
 const cors = require('cors');
-const path = require('path');
-const Redis = require('ioredis');
-const fs = require('fs');
+const { createClient } = require('ioredis');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const redisConnection = new Redis({
-    host: 'redis',  // <--- Use the service name from docker-compose.yml
-    port: 6379,
-    maxRetriesPerRequest: null
-});
+
+const redisConnection = createClient({ host: 'redis', port: 6379, maxRetriesPerRequest: null });
+redisConnection.on('error', (err) => console.error("Redis Connection Error:", err));
+redisConnection.on('connect', () => console.log("Connected to Redis"));
+
 const queue = new Queue('convertQueue', { connection: redisConnection });
 const upload = multer({ dest: 'uploads/' });
 
@@ -27,6 +25,7 @@ app.post('/convert', upload.single('file'), async (req, res) => {
 
 app.get('/status/:jobId', async (req, res) => {
     const job = await queue.getJob(req.params.jobId);
+
     if (!job) return res.status(404).json({ error: 'Job not found' });
     const state = await job.getState();
     if (state === 'completed') {

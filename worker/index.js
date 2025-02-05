@@ -1,14 +1,13 @@
 const { Worker } = require('bullmq');
 const { exec } = require('child_process');
-const Redis = require('ioredis');
 const fs = require('fs');
 const path = require('path');
+const { createClient } = require('ioredis');
 
-const redisConnection = new Redis({
-    host: 'redis',  // <--- Use the service name from docker-compose.yml
-    port: 6379,
-    maxRetriesPerRequest: null
-});
+const redisConnection = createClient({ host: 'redis', port: 6379, maxRetriesPerRequest: null });
+redisConnection.on('error', (err) => console.error('Redis Connection Error:', err));
+redisConnection.on('connect', () => console.log('Connected to Redis'));
+
 const worker = new Worker('convertQueue', async (job) => {
     const inputFile = job.data.filePath;
     const outputFile = path.join(__dirname, 'output', `${job.id}.gif`);
