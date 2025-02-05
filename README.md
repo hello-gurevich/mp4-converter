@@ -18,5 +18,5 @@ Convert mp4 files to gif format
 ## Run locally
 
 docker compose up --build
-open http://localhost:4200
+&& open http://localhost:4200
 
